@@ -1,0 +1,46 @@
+* ERAD RS 2019 - Leitura e resumo dos slides 
+** Modelo PCAM
+
+   Apresentação de conceitos para construção de programas paralelos
+
+   - Particionamento
+   - Comunicação
+   - Aglomeração
+   - Mapeamento
+
+   Etapas:
+   - Particionamento / Comunicação: *Focam na escabilidade de uma
+     solução*. 
+     - Procurar algoritmos que oferecem um paralelismo extremo;
+     - A maior concorrência possível entre as unidades de
+       processamento; 
+
+   - Aglomeração / Mapeamento: *Focam na preocupação com desempenho*. 
+     - Necessita de conhecimentos de configuração da plataforma de
+       execução.
+     - Como mapear para os recursos computacionais.
+     - Como balancear a carga.
+
+   Provavelmente esse tipo de técnica pode ser aplicada de maneira
+   cíclica.
+
+*** Particionamento
+    *Objetivo:* Descobrir oportunidades de paralelismo.
+     - Identificar operações que podem ser utilizadas em paralelo.
+     - Identificar a menor operação possível, a menor *granulidade
+       (grão)*.
+
+    Um tamanho muito pequeno para operação poderia causar problemas,
+    como: comunicação excessiva e tarefas demais.
+
+****** Particionamento de dados (decomposição de domínio)
+       *Objetivo:* Particionamento do problema com enfoque em seus
+        dados.
+       Cada pedaço do problema terá os dados e suas operações,
+        usualmente dividos num mesmo tamanho.
+
+****** Particionamento de operações (decomposição funcional)
+       *Objetivo:* Particionamento do problema com enfoque em suas
+        operações.
+       Divide-se as operações que podem ser executadas de maneira
+        concorrente, criando *partes funcionais.*
