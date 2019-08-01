@@ -1,7 +1,7 @@
 * ERAD RS 2019 - Leitura e resumo dos slides 
 ** Modelo PCAM
 
-   Apresentação de conceitos para construção de programas paralelos
+   Apresentação de conceitos para construção de programas paralelos:
 
    - Particionamento
    - Comunicação
@@ -33,14 +33,79 @@
     Um tamanho muito pequeno para operação poderia causar problemas,
     como: comunicação excessiva e tarefas demais.
 
-****** Particionamento de dados (decomposição de domínio)
+**** Particionamento de dados (decomposição de domínio)
        *Objetivo:* Particionamento do problema com enfoque em seus
         dados.
        Cada pedaço do problema terá os dados e suas operações,
         usualmente dividos num mesmo tamanho.
 
-****** Particionamento de operações (decomposição funcional)
+**** Particionamento de operações (decomposição funcional)
        *Objetivo:* Particionamento do problema com enfoque em suas
         operações.
        Divide-se as operações que podem ser executadas de maneira
         concorrente, criando *partes funcionais.*
+*** Comunicação
+    *Objetivo:* Fase essencial para que os processos conversem entre si,
+     compartilhando informações; no entanto, a comunicação implica em
+     sincronização, o que *prejudica o alto desempenho.*
+
+**** Definições
+       - *Local:* Necessita dados de poucas partições vizinhas.
+       - *Global:* Necessita dados de todas as partições.
+       - *Assíncrona :* O emissor não sabe quando os dados serão
+         utilizados, apenas os envia.
+       - *Síncrona :* Emissor e receptor estão cientes quando a operação
+         acontece.
+*** Aglomeração
+    *Objetivo :* Tornar o algortimo mais realista, considerando os
+     limites impostos pela plataforma alvo. E também, obter um
+     programa eficiente na plataforma, aumentando a localidade do
+     cálculo.
+   *Benefícios :*
+   - Impacto em diretivas de comunicação.
+   - Benefícios da replicação de dados e operações.
+   - Necessidade da redução drástica do número total de tarefas (uma
+     por unidade de processamento).
+*** Mapeamento
+    *Objetivo :* Definir onde cada tarefa será executada. É uma tarefa
+    complexa, pois: 
+    - Deve ser explícito em supercomputadores de alto desempenho.
+    - Soluções simples podem ser empregados; entretanto, com um baixo
+      desempenho.
+
+**** Mapeamento simples
+     *Pré-condições :*
+     - Custo computacional das tarefas é *estático* (ao longo do tempo)
+     - Custo computacional das tarefas é *homogêneo* (entre as
+       partições)
+     - Supercomputador tem capidade *homogênea*, e a rede de
+       interconexão também.
+
+     *Aglomeramos as partições para ter uma por núcleo,* *assim
+     evitamos* *ao máximo a comunicação.*
+     
+**** Mapeamento mais complexo
+     Cenário onde as partições tem custos computacionais diferentes
+     (*heterogêneas*), ainda que sejam estáticas ao longo do tempo de
+     execução.
+
+***** Algoritmos de balanceamento de carga
+      Estes algoritmos permitem equilibrar o cálculo, e também
+      encontrar a melhor granulidade.
+
+****** Bisseção recursiva (*Barnes-Hut, centralizado/distribuído*)
+       - *Simples :* unicamente pelas coordenadas.
+       - *Melhor :* método de balanceamento (somente *comunicações*).
+       - *Bisseção recursiva :* para malhas irregulares.
+
+****** Balanceamento de carga local
+       Algoritmo distribuído.
+***** Escalonamento de tarefas 
+      Existe um *maestro* escalonador que define em quais núcleos de
+      processamento as tarefas irão executar.
+
+      *Funcionamento :* /poll of problems/
+      O maestro equipa-se de uma heurística de escalonamento, onde ele
+      decide durante a execução onde mapear as tarefas.
+
+     
