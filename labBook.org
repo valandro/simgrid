@@ -109,3 +109,57 @@
       decide durante a execução onde mapear as tarefas.
 
      
+* SIMGRID
+** Instalação no Mac OSX
+
+*** Instalação da biblioteca C *Boost*:
+
+   #+begin_src shell
+   brew install boost
+   #+end_src
+
+*** Download do SIMGRID no site oficial:
+    
+   [[https://simgrid.org][Site oficial]]
+
+*** Extrair o arquivo:
+
+   #+begin_src shell 
+   tar -xvf SimGrid-x.x.x.tar.gz  
+   #+end_src
+
+*** Entrar no diretório:
+
+   #+begin_src shell
+   cd SimGrid-x.x.x
+   #+end_src
+
+*** Gerar todos os /makefiles/ (assumindo que você deseja instalar no /folder/ /usr/local):
+
+   #+begin_src shell
+   cmake -DCMAKE_INSTALL_PREFIX=/usr/local -Denable_smpi=on -Denable_documentation=off
+   #+end_src
+
+*** Alterar no arquivo *CmakeCache.txt* de */usr/bin/python* para */usr/bin/python3*
+*** Compilar os arquivos:
+  
+   #+begin_src shell
+   make
+   #+end_src
+
+*** Executar os testes:
+
+   #+begin_src shell 
+   make check
+   #+end_src
+
+*** Instalar bibliotecas e executáveis:
+
+   #+begin_src shell
+   sudo make install
+   #+end_src
+
+*** Versões para instalação
+
+   *Cmake 3.15.1*
+   *Python 3+*
