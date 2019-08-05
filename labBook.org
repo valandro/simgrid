@@ -163,3 +163,108 @@
 
    *Cmake 3.15.1*
    *Python 3+*
+** Descrevendo as plataformas de simulação
+   Para utilização do *SMPI* é necessário descrever qual a topologia do
+   ambiente, e para isso utiliza-se um arquivo XML contendo
+   informações dos /hosts/ e dos /links/ que os interligam.
+
+*** Três /hosts/
+
+    Uma das topologias mais simples que foram apresentadas, contém 3
+    /hosts/ conectados através de 3 /links/, onde existe um /host/ com muito
+    poder computacional (host2), 40 vezes mais que o host0, e o link2
+    possuindo 5 vezes mais velocidade que o link1.
+
+    #+CAPTION: Figura que demonstra a topologia com 3 hosts interconectados.
+    #+NAME: fig:3-HOSTS
+    [[./img/3-host.png]]
+    #+begin_src xml
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4.1">
+   <zone id="AS0" routing="Full">
+     <host id="host0" speed="1Gf"/>
+     <host id="host1" speed="2Gf"/>
+     <host id="host2" speed="40Gf"/>
+     <link id="link0" bandwidth="125MBps" latency="100us"/>
+     <link id="link1" bandwidth="50MBps" latency="150us"/>
+     <link id="link2" bandwidth="250MBps" latency="50us"/>
+     <route src="host0" dst="host1"><link_ctn id="link0"/><link_ctn id="link1"/></route>
+     <route src="host1" dst="host2"><link_ctn id="link1"/><link_ctn id="link2"/></route>
+    <route src="host0" dst="host2"><link_ctn id="link0"/><link_ctn id="link2"/></route>
+  </zone>
+</platform>
+    
+    #+end_src
+
+*** /Cluster/ homogêneo com um /crossbar switch/
+
+    Uma plataforma de processamento paralelo muito comum é um /cluster/
+    homogêneo, contendo N /hosts/ conectados em um /switch/ que é muito
+    mais rápido que as conexões, portanto sua latência e banda são
+    desconsideradas.
+
+    #+CAPTION: Figura que demonstra a topologia com um crossbar switch.
+    #+NAME: fig:CROSSBAR
+
+    [[./img/crossbar.png]]
+
+
+    #+begin_src xml
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4.1">
+    <zone id="AS0" routing="Full">
+        <cluster id="my_cluster" prefix="host-" suffix=".hawaii.edu" radical="0-255" speed="1Gf" bw="125Mbps" lat="5us"/>
+    </zone>
+</platform>
+    
+    #+end_src
+
+*** /Cluster/ homogêneo com um /backbone/ compartilhado
+    
+    Uma plataforma de processamento paralelo muito comum é um /cluster/
+    homogêneo conectado a um meio de comunicação compartilhado, um
+    /backbone/, que contém capacidade de banda finita.
+
+    #+CAPTION: Figura que demonstra a topologia com um backbone shared.
+    #+NAME: fig:BACKBONE
+
+    [[./img/backbone.png]]
+
+    #+begin_src xml
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4.1">
+  <zone id="AS0" routing="Full">
+    <cluster id="my_cluster" prefix="host−" suffix=".hawaii.edu" radical="0−255" speed="1Gf" bw="125Mbps" lat="50us" bb_bw="2.25Gbps" bb_lat="500us"/>
+  </zone>
+</platform>
+
+    #+end_src
+
+*** Dois /clusters/ conectados
+
+    É possível conectar /clusters/ e de fato construir ambientes de
+    procesamento paralelo com hierarquias. 
+
+
+    #+CAPTION: Figura que demonstra a topologia com dois clusters conectados.
+    #+NAME: fig:2-CLUSTERS
+    [[./img/2-clusters.png]]
+
+    #+begin_src xml
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4.1">
+  <zone id="AS0" routing="Full">
+    <cluster id="my_cluster_1" prefix="C1−" suffix=".hawaii.edu" radical="0−15" speed="1Gf" bw="125Mbps" lat="50us" bb_bw="2.25Gbps" bb_lat="500us" />
+    <cluster id="my_cluster_2" prefix="C2−" suffix=".hawaii.edu" radical="0−31" speed="2Gf" bw="125Mbps" lat="50us" />
+    <link id="internet_backbone" bandwidth="0.01Gbps" latency="22500us" />
+    <zoneRoute src="my_cluster_1" dst="my_cluster_2" gw_src="C1−my_cluster_1_router.hawaii.edu" gw_dst="C2−my_cluster_2_router.hawaii.edu" symmetrical="YES">
+      <link_ctn id="internet_backbone" />
+    </zoneRoute>
+  </zone>
+</platform>
+    
+    #+end_src
