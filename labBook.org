@@ -620,3 +620,18 @@ host-255.hawaii.edu
      disponíveis.
    - A flag *-plataform* serve para explicitar a configuração da
      plataforma que será usada no experimento.
+** Computando um conjunto de Julia
+   *O que é?* Um /Conjunto de Julia/ nada mais é do que dois conjuntos
+    complementares definidos por uma função matemática.
+
+    /begin{cases}
+    z_0 = z
+    z_{n+1} = z_n^2 + c
+    /end{cases}
+
+    onde c = -0.79 + 0.15i, onde diferentes valores para *c* geram
+    diferentes conjuntos de Julia.
+    
+    #+CAPTION: Representação de um conjunto de Julia.
+    #+NAME: fig:julia-set
+    [[./img/juliaset.png]]
