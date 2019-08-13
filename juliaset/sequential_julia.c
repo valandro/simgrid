@@ -4,7 +4,7 @@
 
 int main(int argc, char *argv[]) {
     /* 
-     *   Size of an Julia's set image 
+     *   Size of an Julia's set image => argv[1]
      *
      *   HEIGTH => n pixels
      *   WIDTH => 2n pixels
@@ -19,17 +19,22 @@ int main(int argc, char *argv[]) {
     int width = 2 * n;
     int heigth = n;
     int pixels_size = heigth * width * 3;
-    unsigned char pixels[pixels_size];
+    unsigned char *pixels = malloc(sizeof(char) * pixels_size);
     float tint_bias = 1.0;
 
-    for (int x = 1; x < width; x++) {
-        for (int y = 1; y < heigth; y++) {
-            int result = compute_julia_pixel(x, y, width, heigth, tint_bias, pixels);
-            if (result == -1) {
-                printf("Something went wrong!\n");
-            }
+    // Compute pixels
+    for (int x = 0; x < width; x++) {
+        for (int y = 0; y < heigth; y++) {
+            int result = compute_julia_pixel(x, y, width, heigth, tint_bias, &pixels[x * n + y]);
         }
     }
-    // debug_pixels(pixels, pixels_size);
+
+    // Write file with the pixels value
+    FILE *fp;
+    fp = fopen("julia.bpm", "w+");
+    int res = write_bmp_header(fp, width, heigth);
+    fwrite(pixels, sizeof(*pixels), pixels_size, fp);
+    fclose(fp);
+
     return 0;
 }
