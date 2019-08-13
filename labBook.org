@@ -329,7 +329,7 @@ int main(int argc, char *argv[])
    disponíveis.
 
 *** Configuração da plataforma
-
+    
     #+begin_src xml
     <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
@@ -340,6 +340,7 @@ int main(int argc, char *argv[])
 </platform>
 
     #+end_src
+
 *** Lista de hosts
 
     #+begin_src txt
@@ -620,6 +621,7 @@ host-255.hawaii.edu
      disponíveis.
    - A flag *-plataform* serve para explicitar a configuração da
      plataforma que será usada no experimento.
+
 ** Computando um conjunto de Julia
    *O que é?* Um /Conjunto de Julia/ nada mais é do que dois conjuntos
     complementares definidos por uma função matemática.
@@ -635,3 +637,67 @@ host-255.hawaii.edu
     #+CAPTION: Representação de um conjunto de Julia.
     #+NAME: fig:julia-set
     [[./img/juliaset.png]]
+*** Implementação sequencial
+    Nessa implementação haviam alguns requisitos para serem
+    respeitados:
+    - Receber um *número N inteiro positivo* como paramêtro de entrada
+      para a solução.
+    - Alocação de um vetor do tipo /unsigned char/ de N * (2 * N) * 3
+      elementos.
+    - Preenchimento desse vetor com os valores (RGB) correspondentes
+      ao conjunto de Julia.
+
+    
+    Foi utilizada uma função auxiliar *compute_julia_pixel()* para gerar
+    os valores RGB para o pixels, conforme um conjunto de Julia. Após
+    a criação desse vetor unidimensional que contém todos os pixels do
+    conjunto de Julia, foi criado um arquivo de imagem do tipo *bpm*
+    para visualização do conjunto.
+
+**** Código em C
+     
+#+begin_src C
+int main(int argc, char *argv[]) {
+    /* 
+     *   Size of an Julia's set image => argv[1]
+     *
+     *   HEIGTH => n pixels
+     *   WIDTH => 2n pixels
+     */
+    int n = atoi(argv[1]);
+
+    if (n < 0) {
+        printf("N should be a positive number!\n");
+        return 0;
+    }
+
+    int width = 2 * n;
+    int heigth = n;
+    int pixels_size = heigth * width * 3;
+    unsigned char *pixels = malloc(sizeof(char) * pixels_size);
+    float tint_bias = 1.0;
+
+    // Compute pixels
+    for (int x = 0; x < width; x++) {
+        for (int y = 0; y < heigth; y++) {
+            int result = compute_julia_pixel(x, y, width, heigth, tint_bias, &pixels[x * n + y]);
+        }
+    }
+
+    // Write file with the pixels value
+    FILE *fp;
+    fp = fopen("julia.bpm", "w+");
+    int res = write_bmp_header(fp, width, heigth);
+    fwrite(pixels, sizeof(*pixels), pixels_size, fp);
+    fclose(fp);
+
+    return 0;
+}
+#+end_src
+   
+
+   Foi o vetor de pixels que representam a imagem, o que naturalmente
+   sugere a utilização de uma *matriz NxN*, foi salvo utilizando um
+   vetor de *uma dimensão* salvando as linhas em sequência (/row-major
+   scheme/) de modo que uma imagem com *largura N*, o pixel(i,j) seja
+   salvo no vetor na posição Array[i * N + j].

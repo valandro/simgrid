@@ -56,11 +56,14 @@ int compute_julia_pixel(int x, int y, int width, int height, float tint_bias, un
   rgb[2] = (num_iter == 0 ? 100 : 255 - 255.0 * pow(tint_bias, 1.2) * pow(color_bias, 3.0));
   return 0;
 }
-
+/* 
+  Auxiliar function to print all pixels in a image.
+*/
 void debug_pixels(unsigned char *pixels, size_t length) {
     for (int index = 0; index < length; index ++) {
         printf("%d ", pixels[index]);
     }
+    printf("\n");
 }
 
 /* write_bmp_header():
