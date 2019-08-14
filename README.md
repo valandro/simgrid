@@ -5,7 +5,7 @@ A repository to learn about SimGrid, MPI, Distributed Applications and more.
 
 ### Tutorial
 
-https://simgrid.github.io/SMPI_CourseWare/topic_getting_started/platforms/
+https://simgrid.github.io/SMPI_CourseWare/
 
 I'm following this tutorial to learn about SimGrid, SMPI and more.
 

@@ -267,6 +267,93 @@
 </platform>
     
     #+end_src
+** Comandos comuns do MPI
+*** *MPI_Init*
+
+    Inicializa o ambiente de execução do MPI.
+
+    *int MPI_Init(int *argc, char ****argv)*
+
+*** *MPI_Comm_rank*
+
+    Determina o /rank/ do processo com o comunicador.
+
+    *int MPI_Comm_rank(MPI_Comm comm, int **rank)*
+
+    Input:
+
+      *MPI_Comm comm* - Communicator (handler)
+    
+    Output:
+    
+     *int **rank* - Rank of the calling process in group of comm (integer).
+
+*** *MPI_Comm_size*
+    
+    Retorna o número de processos associados a um comunicador.
+
+    *int MPI_Comm_size(MPI_Comm comm, int **size)*
+    
+    Input:
+
+      *MPI_Comm comm* - Communicator (handler)
+
+    Output:
+
+     *int **size* - Number of processes in the group of comm (integer).
+
+*** *MPI_Get_processor_name*
+
+    Retorna um identificador único para o processo.
+
+    *int MPI_Get_processor_name(char **name, int **resultlen)*
+
+    Ouput:
+    
+     *char **name* - A unique specifier for the actual (as opposed to virtual) node.
+     
+     *int **resultlen* - Length (in characters) of result returned in name. 
+
+*** *MPI_Finalize*
+
+    Termina o ambiente de execução do MPI
+
+    *MPI_Finalize()*
+
+*** *MPI_Send*  
+
+    Envia uma mensagem bloqueante.
+
+    *int MPI_Send(const void **buf, int count, MPI_Datatype datatype, int dest ,int tag, MPI_Comm comm)*
+
+    Input:
+     
+     *const void **buf* - Initial address of send buffer (choice).
+     *int count* - Number of elements send (nonnegative integer).
+     *MPI_Datatype datatype* - Datatype of each send buffer element (handle).
+     *int dest* - Rank of destination (integer).
+     *int tag* - Message tag (integer).
+     *MPI_Comm comm* - Communicator (handle).
+
+*** *MPI_Recv*
+
+    Recebe uma mensagem bloqueante.
+
+    *int MPI_Recv(void **buf, int count, MPI_Datatype datatype, int source, int tag, MPI_Comm comm, MPI_Status **status)*
+    
+    Input:
+     
+     *int count* - Maximum number of elements to receive (integer).
+     *MPI_Datatype datatype* - Datatype of each receive buffer entry (handle).
+     *int source* - Rank of source (integer).
+     *int tag* - Message tag (integer).
+     *MPI_Comm comm* - Communicator (handle).
+    
+    Output:
+
+     *void **buf* - Initial address of receive buffer (choice).
+     *MPI_Status **status* - Status object (status).
+
 ** Primeiro programa usando SMPI
  
    *Contextualização :* Consiste em um programa onde os processos passam uma mensagem
@@ -701,3 +788,4 @@ int main(int argc, char *argv[]) {
    vetor de *uma dimensão* salvando as linhas em sequência (/row-major
    scheme/) de modo que uma imagem com *largura N*, o pixel(i,j) seja
    salvo no vetor na posição Array[i * N + j].
+*** Implementação paralela usando um vetor de 1-D
