@@ -20,7 +20,6 @@ int main(int argc, char *argv[])
   // Allocate a 10MiB buffer
   char *buffer = malloc(sizeof(char) * N);
 
-
   // Communicate along the ring
   if (rank == 0) {
     gettimeofday(&start,NULL);
@@ -29,9 +28,7 @@ int main(int argc, char *argv[])
     MPI_Recv(buffer, N, MPI_BYTE, size-1, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     printf("Rank %d (running on '%s'): received the message from rank %d\n",rank,hostname,size-1);
   	gettimeofday(&end,NULL);
-  	printf("%f\n",(end.tv_sec*1000000.0 + end.tv_usec -
-		start.tv_sec*1000000.0 - start.tv_usec) / 1000000.0);
-
+  	printf("%f\n",(end.tv_sec*1000000.0 + end.tv_usec - start.tv_sec*1000000.0 - start.tv_usec) / 1000000.0);
   } else {
     MPI_Recv(buffer, N, MPI_BYTE, rank-1, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     printf("Rank %d (running on '%s'): receive the message and sending it to rank %d\n",rank,hostname,(rank+1)%size);

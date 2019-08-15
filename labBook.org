@@ -740,7 +740,7 @@ host-255.hawaii.edu
     a criação desse vetor unidimensional que contém todos os pixels do
     conjunto de Julia, foi criado um arquivo de imagem do tipo *bpm*
     para visualização do conjunto.
-
+    
 **** Código em C
      
 #+begin_src C
@@ -788,4 +788,21 @@ int main(int argc, char *argv[]) {
    vetor de *uma dimensão* salvando as linhas em sequência (/row-major
    scheme/) de modo que uma imagem com *largura N*, o pixel(i,j) seja
    salvo no vetor na posição Array[i * N + j].
+**** Compilando e executando
+
+     Para compilar, basta:
+     
+     #+begin_src shell
+     make sequential
+     #+end_src
+
+     E para executar, basta passar o número *N (que deve ser um número par)*, onde *N* que corresponde a altura
+     da imagem, e 2 * *N* corresponde a largura da imagem que será
+     gerada.
+
+     #+begin_src shell
+     ./sequential_julia 100
+     #+end_src
+
 *** Implementação paralela usando um vetor de 1-D
+

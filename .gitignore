@@ -1,2 +1,4 @@
 *.org~
 .DS_Store
+smpitmp-*
+.vscode/*.*

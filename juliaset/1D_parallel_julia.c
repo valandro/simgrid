@@ -3,7 +3,7 @@
 #include <mpi.h>
 #include "julia.h"
 
-void main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) {
     /* 
      *   Size of an Julia's set image => argv[1]
      *
@@ -31,6 +31,9 @@ void main(int argc, char *argv[]) {
     int width = 2 * n;
     int heigth = n;
     int pixels_size = heigth * width * 3;
+    int rows = n / size;
+
+    printf("Process %d out of %d: I should compute pixels rows %d to %d, for a total of %d rows\n", rank, size, (((rank) % size) * rows) , ((rank + 1) == size) ? size * rows : (((rank + 1) % size) * rows), rows);
 
     MPI_Finalize();
 }
