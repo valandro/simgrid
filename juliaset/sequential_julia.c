@@ -23,17 +23,17 @@ int main(int argc, char *argv[]) {
     float tint_bias = 1.0;
 
     // Compute pixels
-    for (int x = 0; x < width; x++) {
-        for (int y = 0; y < heigth; y++) {
+    for (int y = 0; y < heigth; y++) {
+        for (int x = 0; x < width; x++) {
             int result = compute_julia_pixel(x, y, width, heigth, tint_bias, &pixels[x * n + y]);
         }
     }
 
     // Write file with the pixels value
     FILE *fp;
-    fp = fopen("julia.bpm", "w+");
+    fp = fopen("julia.bpm", "w");
     int res = write_bmp_header(fp, width, heigth);
-    fwrite(pixels, sizeof(*pixels), pixels_size, fp);
+    fwrite(pixels, sizeof(char), pixels_size, fp);
     fclose(fp);
 
     return 0;

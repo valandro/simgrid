@@ -66,6 +66,13 @@ void debug_pixels(unsigned char *pixels, size_t length) {
     printf("\n");
 }
 
+/*
+  Checks if the process is the last one.
+*/
+int is_last_process(int rank, int size) {
+  return (rank+1) % size == 0;
+}
+
 /* write_bmp_header():
  *
  *   In:
@@ -119,4 +126,14 @@ int write_bmp_header(FILE *f, int width, int height) {
 
   // Success means that we wrote 17 "objects" successfully
   return (ret != 17);
+}
+
+unsigned char* add_pixels(unsigned char *pixels_file, unsigned char *pixels, size_t pixels_size) {
+  unsigned char *new_pixels = malloc(sizeof(char) * pixels_size);
+  
+  for (int index = 0; index < pixels_size; index ++) {
+    new_pixels[index] = pixels_file[index] + pixels[index];
+  }
+
+  return new_pixels;
 }
