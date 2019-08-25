@@ -49,34 +49,29 @@ int main(int argc, char *argv[]) {
     if (rank == 0) {
         FILE *fp;
         fp = fopen("julia1d.bpm", "w");
-
+        // Write BPM Header
         int res = write_bmp_header(fp, width, heigth);
+        // Write pixel values
         fwrite(pixels_row, sizeof(char), pixels_size, fp);
-
         fclose(fp);
+        // Send a message to the next process
         MPI_Send(message, sizeof(message), MPI_BYTE, 1, 1, MPI_COMM_WORLD);
     } else {
         MPI_Recv(buffer, sizeof(buffer), MPI_BYTE, rank - 1, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        FILE *fp;
-        // Open the file for reading the current pixels saved
-        fp = fopen("julia1d.bpm", "r");
+        // Open and read all pixels saved
         unsigned char *buffer = malloc(sizeof(char) * pixels_size);
-        size_t result;
-        // Shift BPM Header information
-        fseek(fp, 54, SEEK_SET);
-        // Read all pixels that already had been saved
-        result = fread(buffer, 1, pixels_size, fp);
+        get_pixels_file(buffer, pixels_size, "julia1d.bpm");
         // Merge the file pixels with the pixels_row that was calculated by this process     
-        unsigned char* pixels_added = add_pixels(buffer, pixels_row, pixels_size);
-        fclose(fp);
+        unsigned char* pixels_result = add_pixels(buffer, pixels_row, pixels_size);
         // Open file for saving the new pixels merged
+        FILE *fp;
         fp = fopen("julia1d.bpm", "w");
         // Rewrite BPM Header
         int res = write_bmp_header(fp, width, heigth);
-        fwrite(pixels_added, sizeof(char), pixels_size, fp);
+        fwrite(pixels_result, sizeof(char), pixels_size, fp);
 
         // Free pointers
-        free(pixels_added);
+        free(pixels_result);
         free(buffer);
         fclose(fp);
         // The last process doesnt send an MPI Message

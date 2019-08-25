@@ -67,8 +67,18 @@ void debug_pixels(unsigned char *pixels, size_t length) {
 }
 
 /*
-  Checks if the process is the last one.
+ * is_last_process():
+ *
+ * Checks if the process is the last one.
+ *
+ *   In:
+ *      rank: Number of current process
+ *      size: Number total of process
+ *
+ *   Return:
+ *      Boolean value 1 (true) ou 0 (false).
 */
+
 int is_last_process(int rank, int size) {
   return (rank+1) % size == 0;
 }
@@ -128,12 +138,49 @@ int write_bmp_header(FILE *f, int width, int height) {
   return (ret != 17);
 }
 
-unsigned char* add_pixels(unsigned char *pixels_file, unsigned char *pixels, size_t pixels_size) {
-  unsigned char *new_pixels = malloc(sizeof(char) * pixels_size);
+/*
+ * add_pixels():
+ *
+ * Sum all pixels values between two pixels arrays and return the result.
+ *
+ *   In:
+ *      pixels_array_1: First pixel array.
+ *      pixels_array_2: Second pixel array.
+ *
+ *   Return:
+ *      Array with all positions summed.
+*/
+
+unsigned char* add_pixels(unsigned char *pixels_array_1, unsigned char *pixels_array_2, size_t pixels_size) {
+  unsigned char *result = malloc(sizeof(char) * pixels_size);
   
   for (int index = 0; index < pixels_size; index ++) {
-    new_pixels[index] = pixels_file[index] + pixels[index];
+    result[index] = pixels_array_1[index] + pixels_array_2[index];
   }
 
-  return new_pixels;
+  return result;
+}
+
+/*
+ * get_pixels_file():
+ *
+ * Return all pixels saved in a file.
+ *
+ *   In:
+ *      pixels_size: Number of pixels saved in the file.
+ *      fp: Pointer to the file.
+ *
+ *   Return:
+ *      Array with pixels.
+*/
+
+void get_pixels_file(unsigned char* buffer, size_t pixels_size, char* filename) {
+  FILE *fp;
+  fp = fopen(filename, "r");
+  size_t result;
+  // Shift BPM Header information
+  fseek(fp, 54, SEEK_SET);
+  // Read all pixels that already had been saved
+  result = fread(buffer, 1, pixels_size, fp);
+  fclose(fp);
 }
