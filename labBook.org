@@ -725,6 +725,7 @@ host-255.hawaii.edu
     #+NAME: fig:julia-set
     [[./img/juliaset.png]]
 *** Implementação sequencial
+
     Nessa implementação haviam alguns requisitos para serem
     respeitados:
     - Receber um *número N inteiro positivo* como paramêtro de entrada
@@ -805,4 +806,123 @@ int main(int argc, char *argv[]) {
      #+end_src
 
 *** Implementação paralela usando um vetor de 1-D
+    Nessa implementação a ideia principal era distribuir o
+    processamento dos pixels através de N processos rodando sobre a
+    arquitetura MPI, utilizando o simulador SIMGRID.
 
+**** Solução
+
+    O problema foi repartido da seguinte maneira:
+    - Cada processo *N*, de um total de *X* processos, calculou uma parte igual dos pixels da
+      imagem. Dado uma imagem com altura *L* e largura *2L*, então cada
+      processo *N* acabou calculando *2L * (L/X) * 3* pixels da imagem;
+      entranto, guardam esses pixels em um vetor de *2L * X * 3* posições.
+    - Após o cálculo de determinada região da imagem ser feito de
+      forma distribuída, coube ao primeiro processo escrever sua parte
+      em um arquivo de nome *julia1d.bpm* e mais o header específico dos
+      arquivos de tipo BPM.
+    - Os outros processos tiveram o trabalho de ler o arquivo com
+      *2L * X * 3* pixels, e somar com o vetor que eles haviam
+      calculado. Após feito esse cálculo, o arquivo foi reescrito
+      contendo a nova informação.
+    - *Cada processo N tem como responsabilidade enviar a mensagem "go
+      ahead!" para que o próximo processo execute.*
+
+**** Código em C
+
+   #+begin_src C
+int main(int argc, char *argv[]) {
+    /* 
+     *   Size of an Julia's set image => argv[1]
+     *
+     *   HEIGTH => n pixels
+     *   WIDTH => 2n pixels
+     */
+    int n = atoi(argv[1]);
+
+    if (n < 0) {
+        printf("N should be a positive number!\n");
+        return 0;
+    }
+
+    int size, rank;
+    char hostname[1024];
+    int hostname_len;
+
+    MPI_Init(&argc, &argv);
+
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    MPI_Get_processor_name(hostname, &hostname_len);
+
+    int width = 2 * n;
+    int heigth = n;
+    int rows = n / size;
+    int pixels_size = heigth * width * 3;
+    float tint_bias = 1.0;
+    unsigned char *pixels_row = malloc(sizeof(char) * pixels_size);
+
+    int initial_heigth_pos = (((rank) % size) * rows);
+    int last_heigth_pos = (((rank + 1) == size) ? (size * rows) : (((rank + 1) % size) * rows));
+
+    for (int y = initial_heigth_pos; y < last_heigth_pos; y++) {
+        for (int x = 0; x < width; x++) {
+            int result = compute_julia_pixel(x, y, width, heigth, tint_bias, &pixels_row[x * n + y]);
+        }
+    }
+
+    char message[10] = "Go ahead!";
+    char *buffer = malloc(sizeof(char) * 11);
+
+    if (rank == 0) {
+        FILE *fp;
+        fp = fopen("julia1d.bpm", "w");
+        // Write BPM Header
+        int res = write_bmp_header(fp, width, heigth);
+        // Write pixel values
+        fwrite(pixels_row, sizeof(char), pixels_size, fp);
+        fclose(fp);
+        // Send a message to the next process
+        MPI_Send(message, sizeof(message), MPI_BYTE, 1, 1, MPI_COMM_WORLD);
+    } else {
+        MPI_Recv(buffer, sizeof(buffer), MPI_BYTE, rank - 1, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        // Open and read all pixels saved
+        unsigned char *buffer = malloc(sizeof(char) * pixels_size);
+        get_pixels_file(buffer, pixels_size, "julia1d.bpm");
+        // Merge the file pixels with the pixels_row that was calculated by this process     
+        unsigned char* pixels_result = add_pixels(buffer, pixels_row, pixels_size);
+        // Open file for saving the new pixels merged
+        FILE *fp;
+        fp = fopen("julia1d.bpm", "w");
+        // Rewrite BPM Header
+        int res = write_bmp_header(fp, width, heigth);
+        fwrite(pixels_result, sizeof(char), pixels_size, fp);
+
+        // Free pointers
+        free(pixels_result);
+        free(buffer);
+        fclose(fp);
+        // The last process doesnt send an MPI Message
+        if (!is_last_process(rank, size)) {
+            MPI_Send(message, sizeof(message), MPI_BYTE, (rank + 1) % size, 1, MPI_COMM_WORLD);
+        }
+    }
+
+    MPI_Finalize();
+}
+#+end_src
+**** Compilando e executando
+
+     Para compilar, basta:
+     
+     #+begin_src shell
+     make 1d
+     #+end_src
+
+     E agora, basta rodar o comando smpirun para executar o programa,
+     em uma plataforma alvo. Segue abaixo o exemplo de execução de uma
+     imagem 1000x2000 pixels.
+
+     #+begin_src shell
+     smpirun -np 5 -hostfile ./simple_cluster_hostfile.txt -platform ./simple_cluster.xml ./1D_parallel_julia 1000
+     #+end_src
