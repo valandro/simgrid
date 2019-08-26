@@ -4,10 +4,14 @@ sequential:
 	gcc -o sequential_julia sequential_julia.c $(JULIA_LIB)
 clean-sequential:
 	rm sequential_julia julia.bpm
-smpi:
-	rm smpitmp-*
 1d:
 	smpicc -O3 1D_parallel_julia.c -o 1D_parallel_julia $(JULIA_LIB)
-clean-1d:
+clean1d:
 	rm 1D_parallel_julia julia1d.bpm
-clean: smpi clean-sequential clean-1d
+2d:
+	smpicc -O3 1D_parallel_julia.c -o 1D_parallel_julia $(JULIA_LIB)
+clean2d:
+	rm 2D_parallel_julia julia2d.bpm
+smpi:
+	rm smpitmp-*
+clean: smpi clean-sequential clean1d clean2d
