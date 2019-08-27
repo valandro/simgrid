@@ -57,8 +57,11 @@ int compute_julia_pixel(int x, int y, int width, int height, float tint_bias, un
   return 0;
 }
 /* 
-  Auxiliar function to print all pixels in a image.
-*/
+ * debug_pixels():
+ *
+ *  Auxiliar function to print all pixels in a image.
+ * 
+ */
 void debug_pixels(unsigned char *pixels, size_t length) {
     for (int index = 0; index < length; index ++) {
         printf("%d ", pixels[index]);
@@ -96,8 +99,7 @@ int is_last_process(int rank, int size) {
 
 int write_bmp_header(FILE *f, int width, int height) {
 
-  unsigned int row_size_in_bytes = width * 3 + 
-	  ((width * 3) % 4 == 0 ? 0 : (4 - (width * 3) % 4));
+  unsigned int row_size_in_bytes = width * 3 * height;
 
   // Define all fields in the bmp header
   char id[2] = "BM";

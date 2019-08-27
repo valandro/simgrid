@@ -18,14 +18,15 @@ int main(int argc, char *argv[]) {
 
     int width = 2 * n;
     int heigth = n;
-    int pixels_size = heigth * width * 3;
-    unsigned char *pixels = malloc(sizeof(char) * pixels_size);
+    int rgb_pixels = 3;
+    int pixels_size = width * heigth * rgb_pixels;
+    unsigned char *pixels = malloc(sizeof(unsigned char) * pixels_size);
     float tint_bias = 1.0;
 
     // Compute pixels
-    for (int y = 0; y < heigth; y++) {
-        for (int x = 0; x < width; x++) {
-            int result = compute_julia_pixel(x, y, width, heigth, tint_bias, &pixels[x * n + y]);
+    for (int x = 0; x < width; x++) {
+        for (int y = 0; y < heigth; y++) {
+            int result = compute_julia_pixel(x, y, width, heigth, tint_bias, &pixels[rgb_pixels * ((y * width) + x)]);
         }
     }
 

@@ -761,34 +761,39 @@ int main(int argc, char *argv[]) {
 
     int width = 2 * n;
     int heigth = n;
-    int pixels_size = heigth * width * 3;
-    unsigned char *pixels = malloc(sizeof(char) * pixels_size);
+    int rgb_pixels = 3;
+    int pixels_size = width * heigth * rgb_pixels;
+    unsigned char *pixels = malloc(sizeof(unsigned char) * pixels_size);
     float tint_bias = 1.0;
 
     // Compute pixels
     for (int x = 0; x < width; x++) {
         for (int y = 0; y < heigth; y++) {
-            int result = compute_julia_pixel(x, y, width, heigth, tint_bias, &pixels[x * n + y]);
+            int result = compute_julia_pixel(x, y, width, heigth, tint_bias, &pixels[rgb_pixels * ((y * width) + x)]);
         }
     }
 
     // Write file with the pixels value
     FILE *fp;
-    fp = fopen("julia.bpm", "w+");
+    fp = fopen("julia.bpm", "w");
     int res = write_bmp_header(fp, width, heigth);
-    fwrite(pixels, sizeof(*pixels), pixels_size, fp);
+    fwrite(pixels, sizeof(char), pixels_size, fp);
     fclose(fp);
 
     return 0;
 }
 #+end_src
    
-
-   Foi o vetor de pixels que representam a imagem, o que naturalmente
-   sugere a utilização de uma *matriz NxN*, foi salvo utilizando um
-   vetor de *uma dimensão* salvando as linhas em sequência (/row-major
+   Foi utilizado um vetor de 1-D para salvar todos os pixels da imagem
+   que corresponde ao conjunto de Julia. Através de uma organização
+   por linhas, onde cada linha da imagem é salva em sequência (/row-major
    scheme/) de modo que uma imagem com *largura N*, o pixel(i,j) seja
-   salvo no vetor na posição Array[i * N + j].
+   salvo no vetor na posição Array[i * N + j]; entretanto, como esse
+   array possui a dimensão de *N * 2N * 3* foi necessário deslocar o
+   vetor em 3 posições, portanto, para localizar o valor RGB do pixel(i,j)
+   em questão, basta deslocar o vetor da seguinte maneira:
+   Array[RGB * ((i * N) + j)], onde R = 1, G = 2 e B = 3.
+
 **** Compilando e executando
 
      Para compilar, basta:
