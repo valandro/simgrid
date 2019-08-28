@@ -826,10 +826,8 @@ int main(int argc, char *argv[]) {
       forma distribuída, coube ao primeiro processo escrever sua parte
       em um arquivo de nome *julia1d.bpm* e mais o header específico dos
       arquivos de tipo BPM.
-    - Os outros processos tiveram o trabalho de ler o arquivo com
-      *2L * X * 3* pixels, e somar com o vetor que eles haviam
-      calculado. Após feito esse cálculo, o arquivo foi reescrito
-      contendo a nova informação.
+    - Os outros processos tiveram o trabalho de gravar *2L * (L/X) * 3*
+      pixels ao final do arquivo.
     - *Cada processo N tem como responsabilidade enviar a mensagem "go
       ahead!" para que o próximo processo execute.*
 
@@ -863,16 +861,17 @@ int main(int argc, char *argv[]) {
     int width = 2 * n;
     int heigth = n;
     int rows = n / size;
-    int pixels_size = heigth * width * 3;
+    int rgb_pixels = 3;
+    int pixels_size = width * rows * rgb_pixels;
     float tint_bias = 1.0;
     unsigned char *pixels_row = malloc(sizeof(char) * pixels_size);
 
     int initial_heigth_pos = (((rank) % size) * rows);
     int last_heigth_pos = (((rank + 1) == size) ? (size * rows) : (((rank + 1) % size) * rows));
 
-    for (int y = initial_heigth_pos; y < last_heigth_pos; y++) {
-        for (int x = 0; x < width; x++) {
-            int result = compute_julia_pixel(x, y, width, heigth, tint_bias, &pixels_row[x * n + y]);
+    for (int x = 0; x < width; x++) {
+        for (int y = initial_heigth_pos, row = 0; y < last_heigth_pos && row < rows; y++, row++) {
+            int result = compute_julia_pixel(x, y, width, heigth, tint_bias, &pixels_row[rgb_pixels * ((row * width) + x)]);
         }
     }
 
@@ -891,21 +890,12 @@ int main(int argc, char *argv[]) {
         MPI_Send(message, sizeof(message), MPI_BYTE, 1, 1, MPI_COMM_WORLD);
     } else {
         MPI_Recv(buffer, sizeof(buffer), MPI_BYTE, rank - 1, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-        // Open and read all pixels saved
-        unsigned char *buffer = malloc(sizeof(char) * pixels_size);
-        get_pixels_file(buffer, pixels_size, "julia1d.bpm");
-        // Merge the file pixels with the pixels_row that was calculated by this process     
-        unsigned char* pixels_result = add_pixels(buffer, pixels_row, pixels_size);
-        // Open file for saving the new pixels merged
+        // Open and save all pixels at EOF
         FILE *fp;
-        fp = fopen("julia1d.bpm", "w");
-        // Rewrite BPM Header
-        int res = write_bmp_header(fp, width, heigth);
-        fwrite(pixels_result, sizeof(char), pixels_size, fp);
+        fp = fopen("julia1d.bpm", "a");
+        fwrite(pixels_row, sizeof(char), pixels_size, fp);
 
         // Free pointers
-        free(pixels_result);
-        free(buffer);
         fclose(fp);
         // The last process doesnt send an MPI Message
         if (!is_last_process(rank, size)) {
@@ -915,7 +905,8 @@ int main(int argc, char *argv[]) {
 
     MPI_Finalize();
 }
-#+end_src
+   #+end_src
+
 **** Compilando e executando
 
      Para compilar, basta:
@@ -926,7 +917,7 @@ int main(int argc, char *argv[]) {
 
      E agora, basta rodar o comando smpirun para executar o programa,
      em uma plataforma alvo. Segue abaixo o exemplo de execução de uma
-     imagem 1000x2000 pixels.
+     imagem 2000x1000 pixels.
 
      #+begin_src shell
      smpirun -np 5 -hostfile ./simple_cluster_hostfile.txt -platform ./simple_cluster.xml ./1D_parallel_julia 1000
