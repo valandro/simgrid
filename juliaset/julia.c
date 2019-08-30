@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <mpi.h>
 
 /*
  * compute_julia_pixel(): compute RBG values of a pixel in a
@@ -174,7 +175,7 @@ unsigned char* add_pixels(unsigned char *pixels_array_1, unsigned char *pixels_a
  *
  *   Return:
  *      Array with pixels.
-*/
+ */
 
 void get_pixels_file(unsigned char* buffer, size_t pixels_size, char* filename) {
   FILE *fp;
@@ -185,4 +186,35 @@ void get_pixels_file(unsigned char* buffer, size_t pixels_size, char* filename) 
   // Read all pixels that already had been saved
   result = fread(buffer, 1, pixels_size, fp);
   fclose(fp);
+}
+
+/* 
+ * get_process_coord():
+ * 
+ * Return the specific coordenates of a process in a cartesian plan.
+ * 
+ *    In: 
+ *       comm: MPI Communicator.
+ *       coord[2]: Array where coordenates will be saved.
+ *       array_dim: Matrix NxN dimension.
+ *       rank: Rank of a specific process.
+ * 
+ *    Return:
+ *      Coordenate (x,y) will be returned on coord array.
+ *      coord[0] = x
+ *      coord[1] = y 
+ */
+void get_process_coord(MPI_Comm comm, int coord[2], int array_dim, int rank) {
+  int ndims, reorder, ierr;
+  int dim_size[2], periods[2];
+
+  ndims = 2;
+  dim_size[0] = array_dim;
+  dim_size[1] = array_dim;
+  periods[0] = 1;
+  periods[1] = 0;
+  reorder = 1;
+
+  ierr =  MPI_Cart_create(MPI_COMM_WORLD, ndims, dim_size, periods, reorder, &comm);
+  MPI_Cart_coords(comm, rank, array_dim, coord);
 }

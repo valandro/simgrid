@@ -1,5 +1,17 @@
-* ERAD RS 2019 - Leitura e resumo dos slides 
-** Modelo PCAM
+#+TITLE:     Aprendendo MPI/SimGrid
+#+AUTHOR:    Lucas Valandro da Rocha
+#+EMAIL:     lucas.valandrorocha@inf.ufrgs.br
+#+LANGUAGE:  pt
+
+* Reuniões
+** <2019-08-26> Apresentação dos resultados parciais
+
+   - Demonstração dos resultados parciais obtidos até o momento
+     (Conjunto de Julia Seq + 1D).
+   - Sugestões para criação de análises de tempo/desempenho dos
+     experimentos.
+   - Convesa sobre tópicos mais avançados (3Blue1Brown).
+* Modelo PCAM
 
    Apresentação de conceitos para construção de programas paralelos:
 
@@ -108,7 +120,7 @@
       O maestro equipa-se de uma heurística de escalonamento, onde ele
       decide durante a execução onde mapear as tarefas.
      
-* SIMGRID
+* SimGrid
 ** Instalação no Mac OSX
 
 *** Instalação da biblioteca C *Boost*:
@@ -922,3 +934,4 @@ int main(int argc, char *argv[]) {
      #+begin_src shell
      smpirun -np 5 -hostfile ./simple_cluster_hostfile.txt -platform ./simple_cluster.xml ./1D_parallel_julia 1000
      #+end_src
+*** Implementação paralela usando um vetor de 2-D

@@ -9,7 +9,7 @@ clean-sequential:
 clean1d:
 	rm 1D_parallel_julia julia1d.bpm
 2d:
-	smpicc -O3 1D_parallel_julia.c -o 1D_parallel_julia $(JULIA_LIB)
+	smpicc -O3 2D_parallel_julia.c -o 2D_parallel_julia $(JULIA_LIB)
 clean2d:
 	rm 2D_parallel_julia julia2d.bpm
 smpi:
