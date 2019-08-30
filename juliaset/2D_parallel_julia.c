@@ -41,6 +41,12 @@ int main(int argc, char *argv[]) {
     int coord[2];
 
     get_process_coord(new_comm, coord, array_dim, rank);
-    printf("[Process rank %d]: (%d, %d)\n", rank, coord[0], coord[1]);
+
+    int initial_heigth_pos = coord[0] * rows;
+    int last_heigth_pos = (coord[0] + 1) * rows;
+    int initial_width_pos = coord[1] * columns;
+    int last_width_pos = (coord[1] + 1) * columns;
+
+    printf("[Process rank %d]: (%d, %d), h0: %d h1: %d w0: %d w1: %d\n", rank, coord[0], coord[1], initial_heigth_pos, last_heigth_pos, initial_width_pos, last_width_pos);
     MPI_Finalize();
 }
