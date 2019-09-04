@@ -29,17 +29,17 @@ int main(int argc, char *argv[]) {
 
     int width = 2 * n;
     int heigth = n;
-    int rows = n / size;
+    int row_size = n / size;
     int rgb_pixels = 3;
-    int pixels_size = width * rows * rgb_pixels;
+    int pixels_size = width * row_size * rgb_pixels;
     float tint_bias = 1.0;
     unsigned char *pixels_row = malloc(sizeof(char) * pixels_size);
 
-    int initial_heigth_pos = (((rank) % size) * rows);
-    int last_heigth_pos = (((rank + 1) == size) ? (size * rows) : (((rank + 1) % size) * rows));
+    int initial_heigth_pos = (((rank) % size) * row_size);
+    int last_heigth_pos = (((rank + 1) == size) ? (size * row_size) : (((rank + 1) % size) * row_size));
 
     for (int x = 0; x < width; x++) {
-        for (int y = initial_heigth_pos, row = 0; y < last_heigth_pos && row < rows; y++, row++) {
+        for (int y = initial_heigth_pos, row = 0; y < last_heigth_pos && row < row_size; y++, row++) {
             int result = compute_julia_pixel(x, y, width, heigth, tint_bias, &pixels_row[rgb_pixels * ((row * width) + x)]);
         }
     }
