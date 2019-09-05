@@ -87,6 +87,23 @@ int is_last_process(int rank, int size) {
   return (rank+1) % size == 0;
 }
 
+/*
+ * is_not_last_process_in_cartesian_plan():
+ *
+ * Checks if the process is the last one, in a cartesian plan distribution.
+ *
+ *   In:
+ *      rank: Number of current process
+ *      size: Number total of process
+ *      matrix_dim: Number N of a matrix NxN.
+ *
+ *   Return:
+ *      Boolean value 1 (true) ou 0 (false).
+*/
+int is_not_last_process_in_cartesian_plan(int rank, int matrix_dim, int size) {
+  return (rank + matrix_dim) < size;
+}
+
 /* write_bmp_header():
  *
  *   In:

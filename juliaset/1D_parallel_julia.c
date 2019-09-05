@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
 
     if (rank == 0) {
         FILE *fp;
-        fp = fopen("julia1d.bpm", "w");
+        fp = fopen("julia1d.bmp", "w");
         // Write BPM Header
         int res = write_bmp_header(fp, width, heigth);
         // Write pixel values
@@ -61,7 +61,7 @@ int main(int argc, char *argv[]) {
         MPI_Recv(buffer, sizeof(buffer), MPI_BYTE, rank - 1, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         // Open and save all pixels at EOF
         FILE *fp;
-        fp = fopen("julia1d.bpm", "a");
+        fp = fopen("julia1d.bmp", "a");
         fwrite(pixels_row, sizeof(char), pixels_size, fp);
 
         // Free pointers

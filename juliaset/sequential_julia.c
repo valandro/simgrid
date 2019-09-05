@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
 
     // Write file with the pixels value
     FILE *fp;
-    fp = fopen("julia.bpm", "w");
+    fp = fopen("julia.bmp", "w");
     int res = write_bmp_header(fp, width, heigth);
     fwrite(pixels, sizeof(char), pixels_size, fp);
     fclose(fp);
