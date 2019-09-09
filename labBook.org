@@ -124,9 +124,29 @@
 ** Instalação no Mac OSX
 
 *** Instalação da biblioteca C *Boost*:
+    
+   Entre no site oficial da biblioteca *Boost* e baixe a versão *1.70*:
+   
+   https://www.boost.org/users/history/version_1_70_0.html
+
+   Na pasta em que o arquivo foi salvo:
 
    #+begin_src shell
-   brew install boost
+   tar -xzf boost_1_70_0.tar.gz
+   cd boost_1_70_0
+   #+end_src
+
+   E então, configure:
+
+   #+begin_src shell
+   ./bootstrap.sh --prefix=/usr/local/include
+   #+end_src
+
+   Compile os arquivos e instale a biblioteca:
+
+   #+begin_src shell
+   ./b2
+   ./b2 install
    #+end_src
 
 *** Download do SIMGRID no site oficial:
@@ -171,7 +191,8 @@
    #+end_src
 
 *** Versões para instalação
-
+   
+   *Boost 1.17.0
    *Cmake 3.15.1*
    *Python 3+*
 ** Descrevendo as plataformas de simulação

@@ -1,7 +1,7 @@
 JULIA_LIB = julia.c
 
 sequential:
-	gcc -o sequential_julia sequential_julia.c $(JULIA_LIB)
+	mpicc -o sequential_julia sequential_julia.c $(JULIA_LIB)
 clean-sequential:
 	rm sequential_julia julia.bmp
 1d:
